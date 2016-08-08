@@ -122,29 +122,9 @@ public abstract class FileHelper {
 
     public boolean backup(File fileToBackUp, File backup) {
         if (fileToBackUp.exists()) {
-            FileInputStream inputStream = null;
-            FileOutputStream outputStream = null;
-            try {
-                inputStream = new FileInputStream(fileToBackUp);
-                outputStream = new FileOutputStream(backup);
-                while (inputStream.available() > 0) {
-                    outputStream.write(inputStream.read());
-                }
-                return true;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            } finally {
-                try {
-                    if (inputStream != null) {
-                        inputStream.close();
-                    }
-                    if (outputStream != null) {
-                        outputStream.close();
-                    }
-                } catch (IOException ignored) {
-                }
-            }
+            BackupTask backupTask = new BackupTask(fileToBackUp, backup);
+            backupTask.run();
+            return backupTask.getResult();
         } else {
             return true;
         }
