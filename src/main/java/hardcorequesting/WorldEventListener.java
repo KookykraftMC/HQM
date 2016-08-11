@@ -10,8 +10,11 @@ import java.io.File;
 
 public class WorldEventListener {
 
+    int i;
+
     public WorldEventListener() {
         MinecraftForge.EVENT_BUS.register(this);
+        i = 0;
     }
 
     @SubscribeEvent
@@ -26,9 +29,7 @@ public class WorldEventListener {
 
     @SubscribeEvent
     public void onSave(WorldEvent.Save event) {
-        if (!event.world.isRemote && event.world.provider.dimensionId == 0) {
-
-
+        if (i++ == 3 && !event.world.isRemote && event.world.provider.dimensionId == 0) {
             WorldServer world = (WorldServer) event.world;
             QuestingData.save(getWorldPath(world), world);
         }
