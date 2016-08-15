@@ -120,31 +120,43 @@ public abstract class FileHelper {
         return backup(fileToBackUp, new File(fileToBackUp.getAbsolutePath() + BACKUP_SUFFIX));
     }
 
-    public boolean backup(File fileToBackUp, File backup) {
+    public boolean backup(final File fileToBackUp, final File backup) {
         if (fileToBackUp.exists()) {
-            FileInputStream inputStream = null;
-            FileOutputStream outputStream = null;
-            try {
-                inputStream = new FileInputStream(fileToBackUp);
-                outputStream = new FileOutputStream(backup);
-                while (inputStream.available() > 0) {
-                    outputStream.write(inputStream.read());
-                }
-                return true;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            } finally {
-                try {
-                    if (inputStream != null) {
-                        inputStream.close();
+            final boolean[] result = {false};
+            Runnable backupTask = new Runnable() {
+                @Override
+                public void run() {
+                    FileInputStream inputStream = null;
+                    FileOutputStream outputStream = null;
+                    try {
+                        inputStream = new FileInputStream(fileToBackUp);
+                        outputStream = new FileOutputStream(backup);
+                        while (inputStream.available() > 0) {
+                            outputStream.write(inputStream.read());
+                        }
+                        result[0] = true;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        result[0] = false;
+                    } finally {
+                        try {
+                            if (inputStream != null) {
+                                inputStream.close();
+                            }
+                            if (outputStream != null) {
+                                outputStream.close();
+                            }
+                        } catch (IOException ignored) {
+                        }
                     }
-                    if (outputStream != null) {
-                        outputStream.close();
-                    }
-                } catch (IOException ignored) {
                 }
-            }
+
+                public boolean getResult() {
+                    return result[0];
+                }
+            };
+            backupTask.run();
+            return result[0];
         } else {
             return true;
         }
