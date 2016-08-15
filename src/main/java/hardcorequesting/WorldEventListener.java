@@ -32,6 +32,7 @@ public class WorldEventListener {
         if (i++ == 3 && !event.world.isRemote && event.world.provider.dimensionId == 0) {
             WorldServer world = (WorldServer) event.world;
             QuestingData.save(getWorldPath(world), world);
+            i = 0;
         }
     }
 
